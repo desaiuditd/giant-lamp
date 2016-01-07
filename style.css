@@ -1,0 +1,12 @@
+body {
+	padding-top: 50px;
+	background-color: #dddddd;
+}
+#todo-app {
+	padding: 40px 15px;
+	text-align: center;
+}
+
+.todo-list {
+	margin-top: 10px;
+}
