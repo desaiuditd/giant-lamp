@@ -59,8 +59,8 @@
 
 		<!-- Templates -->
 		<script type="text/template" id="item-template">
-			<div class="view checkbox">
-				<label> <input class="toggle" type="checkbox" /> <%- title.rendered %></label>     <!-- < % = done ? 'checked="checked"' : '' % > -->
+			<div id="todo-<%= id %>" class="view checkbox">
+				<label> <input class="toggle" type="checkbox" <%= 'done' === category ? 'checked="checked"' : '' %> /> <%- title.rendered %></label>
 				<a class="destroy"><i class="glyphicon glyphicon-remove"></i></a>
 			</div>
 			<input class="edit" type="text" value="<%- title.rendered %>" />
@@ -74,7 +74,7 @@
 		<script src="./bower_components/underscore/underscore-min.js"></script>
 		<script src="./bower_components/backbone/backbone-min.js"></script>
 
-		<script src="app.js?ver=1.27"></script>
+		<script src="app.js?ver=1.39"></script>
 
 	</body>
 </html>

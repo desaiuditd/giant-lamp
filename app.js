@@ -8,6 +8,11 @@ $( function() {
 
 	// to-do Model
 	var ToDoItem = Backbone.Model.extend( {
+		defaults: function() {
+			return {
+				category: ''
+			};
+		},
 		parse: function( item ) {
 			var self = this;
 			Backbone.ajax( {
@@ -17,10 +22,8 @@ $( function() {
 				success: function( categories ) {
 					if ( categories.length > 0 ) {
 						var category = categories[0];
-						self.set( { category: category.name } );
-						self.collection.trigger( 'updateCategory' );
+						self.set( "category", category.name );
 					}
-					console.log(self);
 				}
 			} );
 			return item;
@@ -48,36 +51,56 @@ $( function() {
 		tagName: 'li',
 		className: 'todo-item',
 		template: _.template( $( '#item-template' ).html() ),
+		initialize: function() {
+			var self = this;
+			this.model.on( 'change', function( model ) {
+				self.$el.toggleClass( 'done', 'done' === model.get( 'category' ) );
+				self.$( 'input.toggle' ).attr( 'checked', 'done' === model.get( 'category' ) );
+				self.$( 'input.toggle' ).prop( 'checked', 'done' === model.get( 'category' ) );
+			} );
+		},
+		events: {
+			"click a.destroy" : "clear",
+			"dblclick .view"  : "edit",
+			//"blur .edit"      : "close"
+		},
 		render: function() {
 			this.$el.html( this.template( this.model.toJSON() ) );
 			//this.$el.toggleClass( 'done', this.model.get( 'done' ) );
 			this.input = this.$( '.edit' );
 			return this;
+		},
+		// Switch this view into `"editing"` mode, displaying the input field.
+		edit: function () {
+			this.$el.addClass( "editing" );
+			this.input.focus();
+		},
+		// Close the `"editing"` mode, saving changes to the to-do.
+		close: function() {
+			var value = this.input.val();
+			//if (!value) {
+				//this.clear();
+			//} else {
+				this.model.save({title: value});
+				this.$el.removeClass("editing");
+			//}
 		}
-	} );
-
-	var ToDoListView = Backbone.View.extend( {
-		id: 'todo-list',
-		render: function() {
-			var self = this;
-			_.each( this.collection.models, function( item, key ) {
-				self.$el.append( item.render().el );
-			} );
-		}
+		// Remove the item, destroy the model.
+		//clear: function() {
+		//	this.model.destroy();
+		//}
 	} );
 
 	var AppView = Backbone.View.extend( {
 		id: 'todo-app',
 		initialize: function() {
+
 			this.todolistel = $( '#todo-list' );
-			//this.listenTo( todos, 'change',  )
-			//this.listenTo( todos, 'all', this.render );
 
 			// fetch the existing data from API. This is coming via ajax from API, since we don't have server side script to render it on page load.
 			todos.resetTodos();
 
 			this.listenTo( todos, 'successOnFetch', this.render );
-			this.listenTo( todos, 'updateCategory', this.updateCategory );
 		},
 		render: function( options ) {
 			todos.each( this.addOne, this );
@@ -85,9 +108,6 @@ $( function() {
 		addOne: function( todo ) {
 			var view = new ToDoItemView( { model: todo } );
 			this.todolistel.append( view.render().el );
-		},
-		updateCategory: function() {
-			console.log(todos.models);
 		}
 	} );
 

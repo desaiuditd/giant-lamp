@@ -52,7 +52,7 @@ function gl_init() {
 		'label'                 => __( 'ToDo', 'todo' ),
 		'description'           => __( 'ToDo', 'todo' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title' ),
+		'supports'              => array( 'title', 'author' ),
 		'taxonomies'            => array( 'category' ),
 		'hierarchical'          => false,
 		'public'                => true,
